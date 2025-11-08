@@ -1,6 +1,6 @@
 bl_info = {
     "name": "RTXPT Project Exporter",
-    "author": "Ely",
+    "author": "XyloN",
     "version": (1, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D > Sidebar > RTXPT",
@@ -8,11 +8,11 @@ bl_info = {
                     "et JSON de scène compatible RTXPT, avec mise à jour et gestion des doublons. "
                     "Chemin RTXPT.exe configurable dans les préférences de l'addon."),
     "warning": "",
-    "wiki_url": "https://github.com/ely/rtxpt-exporter",
-    "tracker_url": "https://github.com/ely/rtxpt-exporter/issues",
+    "wiki_url": "https://github.com/dx9674hnxw-spec/rtxpt-exporter",
+    "tracker_url": "https://github.com/dx9674hnxw-spec/rtxpt-exporter/issues",
     "category": "Import-Export",
     "support": "COMMUNITY",
-    "doc_url": "https://github.com/ely/rtxpt-exporter/blob/main/README.md"
+    "doc_url": "https://github.com/dx9674hnxw-spec/rtxpt-exporter/blob/main/README.md"
 }
 
 import bpy
@@ -209,3 +209,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
