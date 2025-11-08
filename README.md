@@ -1,5 +1,5 @@
 RTXPT Project Exporter for Blender
-Author: Ely
+Author: XyloN
 Version: 1.2.0
 Category: Import-Export
 Compatibility: Blender 2.80+ (also tested with 3.x, 4.x)
