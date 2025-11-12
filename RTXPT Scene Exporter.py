@@ -1,5 +1,5 @@
 bl_info = {
-    "name": "RTXPT Project Exporter",
+    "name": "RTXPT Exporter",
     "author": "XyloN",
     "version": (1, 2, 0),
     "blender": (2, 80, 0),
@@ -209,4 +209,5 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
