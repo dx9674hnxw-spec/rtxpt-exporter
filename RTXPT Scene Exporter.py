@@ -20,7 +20,8 @@ bl_info = {
 import bpy
 import os
 import json
-from bpy.props import StringProperty, FloatVectorProperty, FloatProperty, BoolProperty, EnumProperty, PointerProperty
+from bpy.props import StringProperty, FloatVectorProperty, FloatProperty, BoolProperty, EnumProperty, PointerProperty, IntProperty
+
 
 def safe_color(val, default=(1.0, 1.0, 1.0)):
     try:
@@ -127,6 +128,56 @@ class RTXPT_Camera_Props(bpy.types.PropertyGroup):
         name="Exposure Value Max",
         default=6.0
     )
+
+# 3bis. Propriétés avancées d’export inspirées glTF-Blender
+
+class RTXPT_Export_Advanced_Props(bpy.types.PropertyGroup):
+    export_format: EnumProperty(
+        name="Format export",
+        items=[
+            ('GLB', "GLB (binaire)", ""),
+            ('GLTF', "glTF Séparé", ""),
+            ('RTXPT', "RTXPT", ""),
+        ],
+        default='GLTF',
+    )
+    export_textures: BoolProperty(
+        name="Inclure les textures", default=True
+    )
+    texture_format: EnumProperty(
+        name="Format textures",
+        items=[
+            ('AUTO', "Auto", ""), ('JPEG', "JPEG", ""), ('PNG', "PNG", ""), ('WEBP', "WebP", ""),
+        ],
+        default='AUTO'
+    )
+    use_draco: BoolProperty(
+        name="Compression Draco", default=False
+    )
+    draco_level: IntProperty(
+        name="Niveau Draco", default=6, min=0, max=10
+    )
+    export_animations: BoolProperty(
+        name="Exporter animations", default=True
+    )
+    export_selection_only: BoolProperty(
+        name="Sélection uniquement", default=False
+    )
+    export_visible_only: BoolProperty(
+        name="Visibles uniquement", default=False
+    )
+    export_extras: BoolProperty(
+        name="Inclure custom properties", default=True
+    )
+    use_gltfpack_compression: BoolProperty(
+        name="Compression post gltfpack", default=False
+    )
+
+
+def ensure_correct_extension(filepath, export_format):
+    ext_map = {'RTXPT': '.rtxpt', 'GLB': '.glb', 'GLTF': '.gltf'}
+    root, ext = os.path.splitext(filepath)
+    return root + ext_map.get(export_format, ext)
 
 # 4. Panel UI main exporter + camera + material edit
 
@@ -244,7 +295,11 @@ class RTXPT_OT_ProjectExport(bpy.types.Operator):
 
         selected_node_name = props.selected_node
         for i, collection in enumerate(root_collection.children):
-            if len(collection.objects) == 0:
+            if collection.hide_viewport:
+                continue
+
+            visible_objects = [obj for obj in collection.objects if not obj.hide_viewport and obj.name in context.view_layer.objects]
+            if not visible_objects:
                 continue
 
             gltf_name = f"{collection.name}.gltf"
@@ -253,7 +308,7 @@ class RTXPT_OT_ProjectExport(bpy.types.Operator):
             gltf_path = os.path.join(gltf_folder, gltf_name)
 
             bpy.ops.object.select_all(action='DESELECT')
-            for obj in collection.objects:
+            for obj in visible_objects:
                 obj.select_set(True)
                 if obj.type == 'MESH':
                     has_mat = False
@@ -269,18 +324,15 @@ class RTXPT_OT_ProjectExport(bpy.types.Operator):
                 export_apply=True
             )
 
-            if collection.objects:
-                locs = [o.location for o in collection.objects]
-                mean_loc = [sum(coord[i] for coord in locs) / len(locs) for i in range(3)]
-            else:
-                mean_loc = [0.0, 0.0, 0.0]
+            locs = [o.location for o in visible_objects]
+            mean_loc = [sum(coord[i] for coord in locs) / len(locs) for i in range(3)] if locs else [0.0, 0.0, 0.0]
 
             rel_model_path = f"Models/{project}/{collection.name}/{gltf_name}"
             if rel_model_path not in data["models"]:
                 new_models.append(rel_model_path)
 
             material_props = {}
-            for obj in collection.objects:
+            for obj in visible_objects:
                 if hasattr(obj, 'material_slots'):
                     for slot in obj.material_slots:
                         if slot.material is not None:
@@ -416,6 +468,7 @@ class RTXPT_OT_ProjectExport(bpy.types.Operator):
 
         self.report({"INFO"}, f"Project export completed: {json_path}")
         return {"FINISHED"}
+
 
 class RTXPT_MaterialEdit_Props(bpy.types.PropertyGroup):
     material_name: StringProperty(name="Material Name")
