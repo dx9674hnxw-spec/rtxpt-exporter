@@ -4,9 +4,8 @@ bl_info = {
     "version": (1, 2, 0),
     "blender": (2, 80, 0),
     "location": "View3D > Sidebar > RTXPT",
-    "description": ("Permet l'export des sous-collections de 'EXPORT_TEST' en modèles glTF "
-                    "et JSON de scène compatible RTXPT, avec mise à jour et gestion des doublons. "
-                    "Chemin RTXPT.exe configurable dans les préférences de l'addon."),
+    "description": ("Allows exporting sub-collections from ‘EXPORT_TEST’ to glTF models and RTXPT-compatible scene JSON, with updating and duplicate management.
+RTXPT.exe path configurable in the add-on preferences."),
     "warning": "",
     "wiki_url": "https://github.com/dx9674hnxw-spec/rtxpt-exporter",
     "tracker_url": "https://github.com/dx9674hnxw-spec/rtxpt-exporter/issues",
@@ -209,5 +208,6 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 
