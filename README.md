@@ -60,3 +60,54 @@ Documentation, wiki, and further support: (to be linked/documented)
 
 License
 GPL v3
+
+---
+
+# RTXPT Live Link
+
+`RTXPT Live Link.py` is a companion add-on to the exporter above. Where the exporter
+writes glTF + `.scene.json` files to disk, Live Link talks *live* to a running RTXPT
+instance over a small local TCP connection, so you can navigate the RTXPT viewport by
+navigating Blender's, and push scene changes without restarting `RTXPT.exe` every time.
+
+It requires an RTXPT build with the `--liveLink` Live Link server (see
+[`Docs/LiveLink.md`](https://github.com/dx9674hnxw-spec/RTXPT/blob/main/Docs/LiveLink.md)
+in the RTXPT repository for the wire protocol and current limitations). It works
+standalone for camera live link; installing the RTXPT Exporter add-on alongside it
+additionally enables one-click full scene sync.
+
+## Features
+
+- **Live camera sync** - while connected, streams either the active 3D viewport camera
+  (fly/orbit in Blender and RTXPT follows) or the scene's Camera object, at a
+  configurable rate (default 20 Hz).
+- **Sync Full Scene** - re-runs the RTXPT Exporter's export operator and asks RTXPT to
+  hot-reload the resulting `.scene.json`, in one click.
+- Connection status, host/port and a `Ping` diagnostic button live in the same `RTXPT`
+  sidebar tab as the exporter panel.
+
+## Usage
+
+1. Install `RTXPT Live Link.py` the same way as the exporter: **Edit > Preferences >
+   Add-ons > Install...**, select the file, enable the add-on.
+2. Launch RTXPT with Live Link enabled: `Rtxpt.exe --scene YourProject.scene.json --liveLink`
+   (add `--liveLinkPort` if you changed the port in the add-on preferences; default is
+   `42042` on both sides).
+3. In Blender's `RTXPT` sidebar tab, open the **RTXPT Live Link** panel and click
+   **Connect**.
+4. Move around the 3D viewport - RTXPT's camera follows in real time.
+5. After editing the scene, click **Sync Full Scene** to re-export and hot-reload it in
+   RTXPT (requires the RTXPT Exporter add-on to also be installed and enabled, and a
+   project name set in its panel).
+
+## Requirements
+
+- Blender 2.80+ (same compatibility range as the exporter)
+- An RTXPT build that includes the Live Link server (`--liveLink` command line option);
+  see the [RTXPT repository](https://github.com/dx9674hnxw-spec/RTXPT)
+- Blender and RTXPT running on the same machine (the server only binds to
+  `127.0.0.1` by design)
+
+## License
+
+GPL v3, same as the exporter add-on.
